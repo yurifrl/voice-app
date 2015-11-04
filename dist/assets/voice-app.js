@@ -129,12 +129,28 @@ define('voice-app/routes/index', ['exports', 'ember'], function (exports, Ember)
     });
     SPEECH.min_confidence = .2; // the default minimum confidence you're willing to accept as a command
     SPEECH.addVoiceCommands([{
-      command: "hello",
+      command: "hi",
       callback: function callback() {
         alert("Hello");
         // do something when the user says "show help". Maybe open a help dialog!
       },
       min_confidence: .5 // you can set a confidence level for each command individually
+    }, {
+      command: /next (slide)?/,
+      callback: function callback() {
+        console.log("Hello");
+        // this would fire when the user says "next" OR "next slide"
+        // using a regex like that makes the voice command recognition
+        // a bit more forgiving
+      }
+    }, {
+      command: /go.+(top|home)/, // regex to match commands more dynamically
+      callback: function callback() {
+        console.log("Hello");
+        // the regex above would match:
+        //  * go home
+        //  * go to the top
+      }
     }]);
     SPEECH.onResult(function (result) {
       // fires after commands set via addVoiceCommands are parsed.
@@ -149,11 +165,7 @@ define('voice-app/routes/index', ['exports', 'ember'], function (exports, Ember)
     });
   };
 
-  exports['default'] = Ember['default'].Route.extend({
-    model: function model() {
-      return "hello";
-    }
-  });
+  exports['default'] = Ember['default'].Route.extend({});
 
 });
 define('voice-app/templates/application', ['exports'], function (exports) {
@@ -184,7 +196,7 @@ define('voice-app/templates/application', ['exports'], function (exports) {
         var el0 = dom.createDocumentFragment();
         var el1 = dom.createElement("h2");
         dom.setAttribute(el1,"id","title");
-        var el2 = dom.createTextNode("Welcome to Ember");
+        var el2 = dom.createTextNode("Say Hi");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n\n");
@@ -224,7 +236,7 @@ define('voice-app/templates/index', ['exports'], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 2,
+            "line": 1,
             "column": 0
           }
         },
@@ -235,20 +247,11 @@ define('voice-app/templates/index', ['exports'], function (exports) {
       hasRendered: false,
       buildFragment: function buildFragment(dom) {
         var el0 = dom.createDocumentFragment();
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
         return el0;
       },
-      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(1);
-        morphs[0] = dom.createMorphAt(fragment,0,0,contextualElement);
-        dom.insertBoundary(fragment, 0);
-        return morphs;
-      },
+      buildRenderNodes: function buildRenderNodes() { return []; },
       statements: [
-        ["content","model",["loc",[null,[1,0],[1,9]]]]
+
       ],
       locals: [],
       templates: []
@@ -339,7 +342,7 @@ define('voice-app/tests/routes/index.jshint', function () {
 
   QUnit.module('JSHint - routes');
   QUnit.test('routes/index.js should pass jshint', function(assert) { 
-    assert.ok(false, 'routes/index.js should pass jshint.\nroutes/index.js: line 1, col 26, Missing semicolon.\nroutes/index.js: line 10, col 29, A leading decimal point can be confused with a dot: \'.2\'.\nroutes/index.js: line 17, col 23, A leading decimal point can be confused with a dot: \'.5\'.\nroutes/index.js: line 28, col 23, A leading decimal point can be confused with a dot: \'.3\'.\nroutes/index.js: line 30, col 2, Unnecessary semicolon.\nroutes/index.js: line 3, col 5, \'SPEECH\' is not defined.\nroutes/index.js: line 4, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 7, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 10, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 11, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 19, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 27, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 19, col 28, \'result\' is defined but never used.\n\n13 errors'); 
+    assert.ok(false, 'routes/index.js should pass jshint.\nroutes/index.js: line 1, col 26, Missing semicolon.\nroutes/index.js: line 9, col 29, A leading decimal point can be confused with a dot: \'.2\'.\nroutes/index.js: line 16, col 23, A leading decimal point can be confused with a dot: \'.5\'.\nroutes/index.js: line 43, col 23, A leading decimal point can be confused with a dot: \'.3\'.\nroutes/index.js: line 45, col 2, Unnecessary semicolon.\nroutes/index.js: line 2, col 5, \'SPEECH\' is not defined.\nroutes/index.js: line 3, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 6, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 9, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 10, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 34, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 42, col 3, \'SPEECH\' is not defined.\nroutes/index.js: line 34, col 28, \'result\' is defined but never used.\n\n13 errors'); 
   });
 
 });
@@ -388,7 +391,7 @@ catch(err) {
 if (runningTests) {
   require("voice-app/tests/test-helper");
 } else {
-  require("voice-app/app")["default"].create({"name":"voice-app","version":"0.0.0+7e0ce658"});
+  require("voice-app/app")["default"].create({"name":"voice-app","version":"0.0.0+a4ac3c64"});
 }
 
 /* jshint ignore:end */

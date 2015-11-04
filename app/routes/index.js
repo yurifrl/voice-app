@@ -1,5 +1,4 @@
 import Ember from 'ember'
-
 if (SPEECH.isCapable()) { // the browser supports speech recognition
   SPEECH.onStart(function() {
     // fires once browser recognition has started
@@ -9,12 +8,28 @@ if (SPEECH.isCapable()) { // the browser supports speech recognition
   });
   SPEECH.min_confidence = .2; // the default minimum confidence you're willing to accept as a command
   SPEECH.addVoiceCommands([{
-    command: "hello",
+    command: "hi",
     callback: function() {
       alert("Hello");
       // do something when the user says "show help". Maybe open a help dialog!
     },
     min_confidence: .5 // you can set a confidence level for each command individually
+  }, {
+    command: /next (slide)?/,
+    callback: function() {
+      console.log("Hello");
+      // this would fire when the user says "next" OR "next slide"
+      // using a regex like that makes the voice command recognition
+      // a bit more forgiving
+    }
+  }, {
+    command: /go.+(top|home)/, // regex to match commands more dynamically
+    callback: function() {
+      console.log("Hello");
+      // the regex above would match:
+      //  * go home
+      //  * go to the top
+    }
   }]);
   SPEECH.onResult(function(result) {
     // fires after commands set via addVoiceCommands are parsed.
@@ -29,8 +44,4 @@ if (SPEECH.isCapable()) { // the browser supports speech recognition
   });
 };
 
-export default Ember.Route.extend({
-  model: function() {
-    return "hello";
-  }
-});
+export default Ember.Route.extend({});
